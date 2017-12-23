@@ -14,7 +14,7 @@ Game.prototype.isLower = function() {
 
 Game.prototype.playersGuessSubmission = function(guess) {
     if (guess < 1 || guess > 100 || typeof guess !== 'number') {
-        throw "That is an invalid guess.";
+        throw 'That is an invalid guess.';
     }
     else {
         this.playersGuess = guess;
@@ -23,16 +23,16 @@ Game.prototype.playersGuessSubmission = function(guess) {
 }
 
 Game.prototype.checkGuess = function() {
-    if (this.playersGuess == this.winningNumber) {
-        return "You Win!";
+    if (this.playersGuess === this.winningNumber) {
+        return 'You Win!';
     }
     else if (this.pastGuesses.indexOf(this.playersGuess) !== -1) {
         return "You've already guessed that number.";
-    }    
+    }
     this.pastGuesses.push(this.playersGuess);
     if (this.pastGuesses.length >= 5) {
         return "Game Over";
-    }    
+    }
     var difference = this.difference();
     switch (true) {
         case difference < 10:
@@ -42,7 +42,7 @@ Game.prototype.checkGuess = function() {
         case difference < 50:
             return "You're getting colder.";
         case difference < 100:
-            return "You're ice cold!" 
+            return "You're ice cold!"
     }
 }
 
@@ -95,12 +95,12 @@ $(document).ready( function() {
             else if (result == "Game Over") {
                 disableButtons(true);
                 $(".subtitle").text("The winning number was: " + game.winningNumber);
-                $(".subtitle").append("<br><br>Click Reset to play again!");
-                $("#player-input").prop('placeholder', 'X');  
-            } 
+                $(".subtitle").append("<br>Click Reset to play again!");
+                $("#player-input").prop('placeholder', 'X');
+            }
             else {
                 game.isLower() ? $(".subtitle").text("Guess Higher!") : $(".subtitle").text("Guess Lower!");
-            }  
+            }
         }
     }
 
@@ -109,20 +109,20 @@ $(document).ready( function() {
         var guessesLeft = jQuery.grep(guesses, function(guess,index) {
             return $(guess).text() === '-';
         });
-        $(guessesLeft[0]).text(value);    
+        $(guessesLeft[0]).text(value);
     }
 
     var disableButtons = function(w) {
         $("#submit").prop("disabled", w);
         $("#hint").prop("disabled", w);
         $("#player-input").prop("disabled", w);
-    }  
+    }
 
     $('#reset').on('click', function() {
         game = newGame();
         $(".title").text("Guessing Game");
         $(".subtitle").text("Guess a number from 1 to 100!");
-        $("#player-input").prop('placeholder', '?')        
+        $("#player-input").prop('placeholder', '?')
         disableButtons(false);
         $("#guess-list").children().map(function() {
             $(this).text('-');
@@ -147,6 +147,6 @@ $(document).ready( function() {
         if (event.which == '13') {
             submitGuess();
             $("#player-input").focus();
-        } 
+        }
     })
 });

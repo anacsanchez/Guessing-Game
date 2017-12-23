@@ -26,6 +26,7 @@ img {
 
 .subtitle {
     font-size: 26px;
+    line-height: 140%;
 }
 
 #footer {
@@ -39,7 +40,7 @@ img {
 
 #headers {
     color: rgb(240, 240, 240);
-    padding: 20px 20px 5% 20px;
+    padding: 2%;
 }
 
 #input-parent {
@@ -55,7 +56,7 @@ img {
     width: 160px;
     height: 160px;
     text-align: center;
-    font-size: 60px;      
+    font-size: 60px;
 }
 
 input[type=text]:focus {
@@ -63,7 +64,7 @@ input[type=text]:focus {
 }
 
 #guess-list {
-    padding-top: 5%;
+    padding-top: 4%;
 }
 .guess {
     display: inline;
