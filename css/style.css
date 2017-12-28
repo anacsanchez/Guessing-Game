@@ -94,9 +94,9 @@ input[type=text]:focus {
     outline: none;
 }
 
-#submit:hover {
+#submit:hover, #submit:focus{
     cursor: pointer;
-    background-color: rgb(2, 187, 233);
+    background-color: rgb(0, 179, 215);
 }
 #reset, #hint {
     margin: 0.6% 0.6% 0% 0.6%;
@@ -107,9 +107,9 @@ input[type=text]:focus {
     font-size: 17px;
     font-weight: bold;
 }
-#reset:hover, #hint:hover {
+#reset:hover, #hint:hover, #reset:focus, #hint:focus {
     cursor: pointer;
-    background-color: rgb(255, 196, 112);
+    background-color: rgb(255, 206, 138);
 }
 
 #menu-btns {
@@ -118,4 +118,11 @@ input[type=text]:focus {
 
 .logo {
     display: inline;
+}
+
+.error {
+    color: red;
+}
+.success {
+    color: rgb(0, 176, 0);
 }

@@ -2,6 +2,7 @@ function Game() {
     this.playersGuess = null;
     this.pastGuesses = [];
     this.winningNumber = generateWinningNumber();
+    this.isOver = false;
 }
 
 Game.prototype.difference = function() {
@@ -14,7 +15,7 @@ Game.prototype.isLower = function() {
 
 Game.prototype.playersGuessSubmission = function(guess) {
     if (guess < 1 || guess > 100 || typeof guess !== 'number') {
-        throw 'That is an invalid guess.';
+        throw new Error('Error');
     }
     else {
         this.playersGuess = guess;
@@ -31,7 +32,7 @@ Game.prototype.checkGuess = function() {
     }
     this.pastGuesses.push(this.playersGuess);
     if (this.pastGuesses.length >= 5) {
-        return "Game Over";
+        return 'Game Over';
     }
     var difference = this.difference();
     switch (true) {
@@ -42,7 +43,9 @@ Game.prototype.checkGuess = function() {
         case difference < 50:
             return "You're getting colder.";
         case difference < 100:
-            return "You're ice cold!"
+            return "You're ice cold!";
+        default:
+            return 'Error';
     }
 }
 
@@ -60,7 +63,7 @@ function newGame() {
 }
 
 function generateWinningNumber() {
-    return Math.floor(Math.random() * (101-1) + 1);
+    return Math.floor(Math.random() * (101 - 1) + 1);
 }
 
 function shuffle(cards) {
@@ -78,75 +81,88 @@ function shuffle(cards) {
 $(document).ready( function() {
     var game = newGame();
 
-    var submitGuess = function() {
-        var guess = +$("#player-input").val();
-        $("#player-input").val('');
-        if (!Number.isNaN(guess)) {
-            result = game.playersGuessSubmission(guess);
-            $(".title").text(result);
-            if (result !== "You've already guessed that number.") {
-                addToList(guess);
-            }
-            if (result == "You Win!") {
-                disableButtons(true);
-                $(".subtitle").text("Click Reset to play again!");
-                $("#player-input").prop('placeholder', game.winningNumber);
-            }
-            else if (result == "Game Over") {
-                disableButtons(true);
-                $(".subtitle").text("The winning number was: " + game.winningNumber);
-                $(".subtitle").append("<br>Click Reset to play again!");
-                $("#player-input").prop('placeholder', 'X');
-            }
-            else {
-                game.isLower() ? $(".subtitle").text("Guess Higher!") : $(".subtitle").text("Guess Lower!");
-            }
-        }
-    }
-
     var addToList = function(value) {
-        var guesses = $("#guess-list").children();
-        var guessesLeft = jQuery.grep(guesses, function(guess,index) {
+        var guesses = $('#guess-list').children();
+        var guessesLeft = jQuery.grep(guesses, function(guess) {
             return $(guess).text() === '-';
         });
         $(guessesLeft[0]).text(value);
     }
 
-    var disableButtons = function(w) {
-        $("#submit").prop("disabled", w);
-        $("#hint").prop("disabled", w);
-        $("#player-input").prop("disabled", w);
+    var disableButtons = function(btn) {
+        $('#submit').prop('disabled', btn);
+        $('#hint').prop('disabled', btn);
+        $('#player-input').prop('disabled', btn);
     }
 
     $('#reset').on('click', function() {
         game = newGame();
-        $(".title").text("Guessing Game");
-        $(".subtitle").text("Guess a number from 1 to 100!");
-        $("#player-input").prop('placeholder', '?')
+        $('.title').removeClass('error success');
+        $('.title').text('Guessing Game');
+        $('.subtitle').text('Guess a number from 1 to 100!');
+        $('#player-input').prop('placeholder', '?')
         disableButtons(false);
-        $("#guess-list").children().map(function() {
+        $('#guess-list').children().map(function() {
             $(this).text('-');
         });
-        $("#player-input").focus();
+        $('#player-input').focus();
     });
 
-    $("#hint").on('click', function() {
+    $('#hint').on('click', function() {
         var hints = game.provideHint();
-        $(".subtitle").text("The winning number is " + hints[0] + ", " + hints[1] + ", " + "or " + hints[2]);
-        $("#hint").prop("disabled", true);
-        $("#player-input").focus();
+        $('.subtitle').text('The winning number is ' + hints[0] + ', ' + hints[1] + ', or ' + hints[2]);
+        $('#hint').prop('disabled', true);
+        $('#player-input').focus();
     });
 
     $('#submit').on('click', function(event) {
         event.preventDefault();
-        $("#player-input").focus();
-        submitGuess();
-    });
-
-    $(this).on('keydown', function(event) {
-        if (event.which == '13') {
-            submitGuess();
-            $("#player-input").focus();
+        var guess = +$('#player-input').val();
+        if (typeof guess === 'number' && !isNaN(guess) && guess >= 1 && guess <= 101) {
+            var result = game.playersGuessSubmission(guess);
+            $('.title').removeClass('error');
+            $('.title').text(result);
+            if (result !== "You've already guessed that number.") {
+                addToList(guess);
+            }
+            else {
+                $('.title').addClass('error');
+            }
+            if (result === 'You Win!') {
+                disableButtons(true);
+                $('.title').addClass('success');
+                $('.subtitle').text('Hit Enter or click Reset to play again!');
+                $('#player-input').prop('placeholder', game.winningNumber);
+            }
+            else if (result === 'Game Over') {
+                disableButtons(true);
+                $('.title').addClass('error');
+                $('.subtitle').text('The winning number was: ' + game.winningNumber);
+                $('.subtitle').append('<br>Hit Enter or click Reset to play again!');
+                $('#player-input').prop('placeholder', 'X');
+            }
+            else {
+                game.isLower() ? $('.subtitle').text('Guess Higher!') : $('.subtitle').text('Guess Lower!');
+            }
         }
-    })
+        else {
+            $('.title').text('You must enter a number between 1 and 100.');
+            $('.title').addClass('error');
+        }
+        $('#player-input').val('')
+        $('#player-input').focus();
+    });
+    $('#player-input').on('keydown', function(event) {
+        if (event.which === 13) {
+            $('#submit').click();
+            event.stopPropagation();
+        }
+    });
+    $(this).on('keydown', function(event) {
+        if ($('#player-input').prop('disabled') === true) {
+            if (event.which === 13) {
+                $('#reset').click();
+            }
+        }
+    });
 });
